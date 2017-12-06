@@ -437,6 +437,23 @@ function Enable-FeaturesInImage {
     }
 }
 
+function Enable-LocalesInImage {
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$winImagePath
+    )
+    Write-Output ('Adding Locales " to image "{0}"' -f $winImagePath)
+    & Dism.exe /image:${winImagePath} /Set-SysLocale:sk-SK /Set-UserLocale:sk-SK
+    if ($LASTEXITCODE) {
+        throw "Dism failed to add Locales to: $winImagePath"
+    }
+	Write-Output ('Adding Timezone " to image "{0}"' -f $winImagePath)
+    & Dism.exe /image:${winImagePath} /Set-TimeZone:"W. Europe Standard Time"
+    if ($LASTEXITCODE) {
+        throw "Dism failed to add Timezone to: $winImagePath"
+    }
+}
+
 function Check-EnablePowerShellInImage {
     Param(
         [Parameter(Mandatory=$true)]
@@ -1385,6 +1402,9 @@ function New-WindowsCloudImage {
             if ($ExtraFeatures) {
                 Enable-FeaturesInImage $winImagePath $ExtraFeatures
             }
+
+            Enable-LocalesInImage $winImagePath
+
         } finally {
             if (Test-Path $VHDPath) {
                 Detach-VirtualDisk $VHDPath
