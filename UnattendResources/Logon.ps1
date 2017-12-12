@@ -182,6 +182,11 @@ function Disable-Swap {
     }
 }
 
+function Install-QemuGuestAgent {
+    $qgaPath = "$resourcesDir\qemu-ga-x64.msi"
+    Start-Process $qgaPath -Wait
+}
+
 try
 {
     Import-Module "$resourcesDir\ini.psm1"
@@ -189,6 +194,8 @@ try
     $persistDrivers = Get-IniFileValue -Path $configIniPath -Section "DEFAULT" -Key "PersistDriverInstall" -Default $true -AsBoolean
     $purgeUpdates = Get-IniFileValue -Path $configIniPath -Section "DEFAULT" -Key "PurgeUpdates" -Default $false -AsBoolean
     $disableSwap = Get-IniFileValue -Path $configIniPath -Section "DEFAULT" -Key "DisableSwap" -Default $false -AsBoolean
+
+    Install-QemuGuestAgent
 
     if ($installUpdates) {
         Install-WindowsUpdates
