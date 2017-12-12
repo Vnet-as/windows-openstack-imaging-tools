@@ -1404,7 +1404,7 @@ function New-WindowsCloudImage {
             }
 
             Enable-LocalesInImage $winImagePath
-            Dism.exe /Image:${winImagePath} /Set-ProductKey:{ProductKey}
+            Dism.exe /Image:${winImagePath} /Set-ProductKey:${ProductKey}
 
         } finally {
             if (Test-Path $VHDPath) {
