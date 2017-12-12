@@ -454,29 +454,6 @@ function Enable-LocalesInImage {
     }
 }
 
-function Install-QemuGuestAgent {
-    Param(
-        [Parameter(Mandatory=$true)]
-        [string]$winImagePath
-    )
-    # Download Qemu Guest Agent
-    $gqaDownloadLink = 'https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-qemu-ga/qemu-ga-win-7.4.5-1/qemu-ga-x64.msi'
-    $qgaPath = 'E:\qemu-ga-x64.msi'
-    (New-Object System.Net.WebClient).DownloadFile($gqaDownloadLink, $qgaPath)
-    if ($LASTEXITCODE) {
-        throw 'Failed to download qemu guest agent'
-    }
-    # Install Qemu Guest Agent
-    Write-Output ('Installing qemu guest agent')
-    Dism.exe /Image:${winImagePath} /Add-Package:${qgaPath}
-    if ($LASTEXITCODE) {
-        throw 'Failed to install qemu guest agent'
-    }
-    else {
-        Write-Output ('Qemu guest agent installed successfuly')
-    }
-}
-
 function Check-EnablePowerShellInImage {
     Param(
         [Parameter(Mandatory=$true)]
@@ -1427,8 +1404,6 @@ function New-WindowsCloudImage {
             }
 
             Enable-LocalesInImage $winImagePath
-            Install-QemuGuestAgent $winImagePath
-            Dism.exe /Image:${winImagePath} /Set-ProductKey:${ProductKey}
 
         } finally {
             if (Test-Path $VHDPath) {
